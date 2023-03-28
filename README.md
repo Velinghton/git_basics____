@@ -11,3 +11,4 @@ git add .
 git commit -m ""
 git 
 
+git log --oneline --all --graph
