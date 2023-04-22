@@ -1,66 +1,85 @@
 class Person:
-    def __init__(self,name, *args):
+    def __init__(self,name):
         self.name = name
-        self.pets = args
 class Owner(Person):
-    ...
-class OwnedPets(Owner):
-
-    def show_pets(self):
-        return self.__dict__
-    def add_new_pet(self):
-        list_of_pets.append(self.__dict__)
-        return list_of_pets
-    def union_pets(*args):
-        res = {}
-        for i in args:
-            for k, v in i.__dict__.items():
-                res[k]=res.get(k, []) + [v]
-        return res
-
-
-
-class Animal:
-    names = []
-    def __init__(self, pets, age, color):
+    def __init__(self,name, pets, name_pets):
+        self.name = name
         self.pets = pets
-        self.age = age
-        self.color = color
-        self.names.append(pets)
+        self.name_pets = name_pets
+    def __repr__(self):
+        return f"{self.name} має {self.pets} по імені : {self.name_pets}"
+class OwnedPets(Owner):
+    ...
+class Animal():
+    all_pets = []
+    def __init__(self, owner:Owner, name):
+        self.name = name
+        self.owner = owner
+        self.all_pets.append(self.__class__.__name__)
 
-class Pet(Animal, OwnedPets):
-    ...
+    def __repr__(self):
+        return f"{self.owner} - має {self.__class__.__name__} по імені : {self.name}"
 
-class Cat(Pet):
+class Cat(Animal):
     ...
-class Dog(Pet):
+class Dog(Animal):
     ...
-class Cow(Pet):
+class Cow(Animal):
     ...
+class Pet():
+    def __init__(self, *animal:Animal):
+        self.container = []
+        self.container.extend(animal)
+    def __repr__(self):
+        return f"All {self.container}"
+    def __contains__(self, item):
+        return item in self.container
+    def __len__(self):
+        return len(self.container)
+    def __getitem__(self, item):
+        if item < 0 or item > len(self.container):
+            raise f"IndexError - введіть вірний індекс в межах {len(self.container)}"
+        return self.container[item]
+    def __setitem__(self, key, value):
+        if key < 0 or key > len(self.container):
+            raise f"IndexError - введіть вірний індекс в межах {len(self.container)}"
+        self.container[key] = value
+
 
 if __name__ == '__main__':
-    list_of_pets = []
-    #відображення домашніх улюбленців що є у власника
-    bob = OwnedPets("Bob", "cat", "dog", "cow")
-    liza = OwnedPets("Liza", "rabbit", "mouse", "cow")
-    for i in(bob, liza):
-        print(f'{i.name} має таких тварин: {i.pets}')
-        print(i.show_pets())
-        print()
+    #Створення тварин
+    cat = Dog("Le", "sharik")
+    dog = Cat("Ro","myrzik")
+    cow = Cow("Lia", "milka")
+    dog = Dog("Rita", "tor")
+    print(cow)
+    print(cat)
+    print(dog)
+    #Створення власника який має тварину
+    roma = Owner("Roma", "cat", "ziza")
+    print(roma)
+    #Збираємо всіх тварин в один контейнер(рet)
+    pet = Pet(cat, dog)
+    print(pet)
+    #Перевірка чи є певнай тип тварини у контейнері(рet)(__contains__)
+    print(cow in pet)
+    print(cat in pet)
+    #Перевіряємо кількіть тварин у контейнері(__len__)
+    print(len(pet))
+    #виклик з контейнера по індексу (__getitem__)
+    print(pet[0])
+    #Заміна тварини в контейнері за індексом (__setitem__)
+    pet[0]=Dog("Le", "bim")
+    print(pet[0])
+    #Список тварин які  було створено
+    print(cat.all_pets)
+    #Cкільки тварин одного типу (приклад Dog) було створено
+    print(cat.all_pets.count("Dog"))
 
-    # Обєднання тварин
-    print(f'Обєднання тварин двох власників: \n{OwnedPets.union_pets(bob, liza)}')
-    print()
 
-    #Додавання нової тварини
-    cat = Cat('cat', 55, 'red')
-    dog = Dog("dog", 100, 'black')
-    cow = Cow("cow", 77, 'green')
-    cow1 = Cow("cow1", 40, 'yellow')
-    cow2 = Cow("cow2", 10, "brown")
-    for i in (cat, dog, cow, cow1):
-        i.add_new_pet()
-    print(f'Список доданих тварин: {list_of_pets}')
-    print(f"Список доданих тварин: {cat.names}")
-    print()
+
+
+
+
+
 
